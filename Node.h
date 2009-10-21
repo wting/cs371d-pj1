@@ -1,15 +1,12 @@
+#ifndef NODE_H
+#define NODE_H
 
-#ifndef Node_h
-#define Node_h
-
-// --------
-// includes
-// --------
-
-#include <cassert>   // assert
-#include <new>       // new
-#include <stdexcept> // invalid_argument
+#include <cassert>
 #include <iostream>
+#include <new>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
 
 #ifdef DEBUG_OUTPUT
 	#define debug(arg) cout << (arg) << endl;
@@ -17,14 +14,42 @@
 	#define debug(arg) /* arg */
 #endif
 
+using namespace std;
 namespace dist {
 
 class Node {
+	string socket;
+	string status;
+	unordered_map<string, string> song_list;
+	unordered_map<string, string> node_list;
     public:
+	Node() {
+	}
 
-    private:
+	//Song related functions
+	void add(string song) {
+	}
+
+	void del(string song) {
+	}
+
+	void edit(string song, string url) {
+	}
+
+	//Node related functions
+	bool connect() {
+		return true;
+	}
+
+	bool disconnect() {
+		return true;
+	}
+
+	bool retire() {
+		return true;
+	}
 
 };
 } // end namespace dist
 
-#endif // Node_h
+#endif // NODE_H

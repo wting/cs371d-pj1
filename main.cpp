@@ -6,6 +6,7 @@
 	\author Will Warner
 */
 
+#include "Logger.h"
 #include "Node.h"
 
 #ifdef DEBUG_OUTPUT
@@ -14,9 +15,13 @@
 	#define debug(arg) /* arg */
 #endif
 
-int main () {
+int main(int argc, char* argv[]) {
     using namespace std;
     using namespace dist;
+
+	Node* A = new Node();
+
+	delete A;
 
     return 0;
 }
