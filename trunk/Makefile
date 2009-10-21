@@ -10,7 +10,7 @@ SVN_FILE = Subversion.log
 
 # compiler definitions
 CC = g++
-CFLAGS = -ansi -pedantic -Wall
+CFLAGS = -ansi -pedantic -Wall -std=gnu++0x
 
 # make options
 main: $(MAIN).$(EXT)
