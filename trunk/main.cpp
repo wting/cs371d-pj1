@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	log.read();
-	log.read_head(1);
-	log.read_tail(2);
+	//log.read_head(1);
+	//log.read_tail(2);
     return 0;
 }
