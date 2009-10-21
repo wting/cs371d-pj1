@@ -27,7 +27,8 @@ int main(int argc, char* argv[]) {
 
 	string input;
 	while (true) {
-		cin >> input;
+		//cin >> input;
+		getline(cin,input);
 		if (cin.eof())
 			break;
 		log.write(0,"input line: " + input);
