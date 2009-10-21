@@ -15,15 +15,13 @@ CFLAGS = -ansi -pedantic -Wall -std=gnu++0x
 ifeq (`hostname | cut -d. -f2-`,cs.utexas.edu) #conditional not working
 	CC = /lusr/opt/gcc-4.3.0/bin/g++
 else
-	#CC = g++
-	CC = /lusr/opt/gcc-4.3.0/bin/g++
+	CC = g++
+	#CC = /lusr/opt/gcc-4.3.0/bin/g++
 endif
 
 # make options
 main: $(MAIN).$(EXT)
 	clear
-	g++ --version
-	echo $(CC)
 	$(CC) $(CFLAGS)	-O2 -o $(MAIN).app $(MAIN).$(EXT)
 	valgrind $(MAIN).app >$(PROJ).out 2>&1
 	less $(PROJ).out
