@@ -1,62 +1,65 @@
-# macro definitions
+### macro definitions
 PROJ = Node
 SVN_LOC = http://cs371d-pj1.googlecode.com/svn/trunk/
 
 MAIN = main
+APP = node
 EXT = cpp
 TEST = Test$(PROJ)
 IN_PROF = in_profile
 SVN_FILE = Subversion.log
 
-# compiler definitions
-CC = /lusr/opt/gcc-4.3.0/bin/g++
-CFLAGS = -ansi -pedantic -Wall -std=gnu++0x
+### compiler definitions
+#CC = /lusr/opt/gcc-4.3.0/bin/g++
+CC = g++
+CFLAGS = -ansi -pedantic -Wall -I /public/linux/include/boost-1_38/ #-std=gnu++0x 
 
-ifeq (`hostname | cut -d. -f2-`,cs.utexas.edu) #conditional not working
-	CC = /lusr/opt/gcc-4.3.0/bin/g++
-else
-	CC = g++
+#ifeq (`hostname | cut -d. -f2-`,cs.utexas.edu) #conditional not working
 	#CC = /lusr/opt/gcc-4.3.0/bin/g++
-endif
+#else
+	#CC = g++
+#endif
 
-# make options
+### make options
 main: $(MAIN).$(EXT)
 	clear
-	$(CC) $(CFLAGS)	-O2 -o $(MAIN).app $(MAIN).$(EXT)
-	valgrind $(MAIN).app >$(PROJ).out 2>&1
+	$(CC) $(CFLAGS)	-O2 -o $(APP) $(MAIN).$(EXT)
+	valgrind $(APP) >$(PROJ).out 2>&1
 	less $(PROJ).out
+	rm -f $(PROJ).out
 
 profile: $(MAIN).$(EXT)
 	clear
-	$(CC) $(CFLAGS) -pg -O2 -DONLINE_JUDGE -DPROFILE -o $(MAIN).app $(MAIN).$(EXT)
-	./$(MAIN).app <$(IN_PROF) >/dev/null
-	gprof ./$(MAIN).app >gprof.out
+	$(CC) $(CFLAGS) -pg -O2 -DONLINE_JUDGE -DPROFILE -o $(APP) $(MAIN).$(EXT)
+	./$(APP) <$(IN_PROF) >/dev/null
+	gprof ./$(APP) >gprof.out
 	head -n20 gprof.out
 
 debug: $(MAIN).$(EXT)
 	clear
-	$(CC) $(CFLAGS)	-O2 -DDEBUG_OUTPUT -o $(MAIN).app $(MAIN).$(EXT)
-	./$(MAIN).app >$(PROJ).out 2>&1
+	$(CC) $(CFLAGS)	-O2 -DDEBUG_OUTPUT -o $(APP) $(MAIN).$(EXT)
+	./$(APP) >$(PROJ).out 2>&1
 	less $(PROJ).out
+	rm -f $(PROJ).out
 
 gdb: $(MAIN).$(EXT)
 	clear
-	$(CC) $(CFLAGS) -ggdb -DDEBUG_OUTPUT -o $(MAIN).app $(MAIN).$(EXT)
-	gdb main.app
+	$(CC) $(CFLAGS) -ggdb -DDEBUG_OUTPUT -o $(APP) $(MAIN).$(EXT)
+	gdb $(APP)
 
 test: $(TEST).h 
 	clear
 	###Compiling...
-	$(CC) $(CFLAGS) -lcppunit -ldl -DTEST -o $(MAIN).app $(MAIN).$(EXT)
+	$(CC) $(CFLAGS) -lcppunit -ldl -DTEST -o $(APP) $(MAIN).$(EXT)
 	###Valgrind...
-	valgrind main.app >$(TEST).out 2>&1 && cat $(TEST).out || ./main.app
+	valgrind $(APP) >$(TEST).out 2>&1 && cat $(TEST).out || ./$(APP)
 
 debug-test: $(MAIN).$(EXT)
 	clear
 	###Compiling...
-	$(CC) $(CFLAGS) -lcppunit -ldl -DDEBUG_OUTPUT -DTEST -o $(MAIN).app $(MAIN).$(EXT)
+	$(CC) $(CFLAGS) -lcppunit -ldl -DDEBUG_OUTPUT -DTEST -o $(APP) $(MAIN).$(EXT)
 	###Valgrind...
-	./$(MAIN).app >$(PROJ).out 2>&1 && less $(PROJ).out || ./main.app
+	./$(APP) >$(PROJ).out 2>&1 && less $(PROJ).out || ./$(APP)
 
 docs: Doxyfile
 	doxygen Doxyfile

@@ -6,7 +6,7 @@
 #include <new>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
+#include <boost/unordered_map.hpp>
 
 #ifdef DEBUG_OUTPUT
 	#define debug(arg) cout << (arg) << endl;
@@ -15,6 +15,7 @@
 #endif
 
 using namespace std;
+using namespace boost;
 namespace dist {
 
 class Node {
@@ -22,6 +23,7 @@ class Node {
 	string status;
 	unordered_map<string, string> song_list;
 	unordered_map<string, string> node_list;
+
     public:
 	Node() {
 	}
