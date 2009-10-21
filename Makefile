@@ -3,8 +3,11 @@ PROJ = Node
 SVN_LOC = http://cs371d-pj1.googlecode.com/svn/trunk/
 
 MAIN = main
-APP = node
 EXT = cpp
+APP = node
+
+INPUT = input
+
 TEST = Test$(PROJ)
 IN_PROF = in_profile
 SVN_FILE = Subversion.log
@@ -24,9 +27,10 @@ CFLAGS = -ansi -pedantic -Wall -I /public/linux/include/boost-1_38/ #-std=gnu++0
 main: $(MAIN).$(EXT)
 	clear
 	$(CC) $(CFLAGS)	-O2 -o $(APP) $(MAIN).$(EXT)
-	valgrind $(APP) >$(PROJ).out 2>&1
-	less $(PROJ).out
-	rm -f $(PROJ).out
+	valgrind $(APP) <$(INPUT) 
+	#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
+	#less $(PROJ).out
+	#rm -f $(PROJ).out
 
 profile: $(MAIN).$(EXT)
 	clear
