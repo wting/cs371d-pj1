@@ -1,20 +1,11 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <cassert>
-#include <iomanip>
-#include <iostream>
-#include <fstream>
-//#include <new>
-//#include <sstream>
+#include <iomanip>		//setw
+#include <iostream>		//cout, endl
+#include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
-
-#ifdef DEBUG_OUTPUT
-	#define debug(arg) cout << (arg) << endl;
-#else
-	#define debug(arg) /* arg */
-#endif
 
 using namespace std;
 
@@ -29,6 +20,12 @@ class Logger {
 	public:
 	///\TODO: add custom string
 	//Logger(bool disp, int thresh, ostringstream &out, string file = "") { }
+	Logger() {
+		display = true;
+		threshold = 0;
+		file = "";
+	}
+
 	Logger(bool disp, int thresh=0, string name = "") {
 		display = disp;
 		threshold = thresh;
@@ -121,6 +118,17 @@ class Logger {
 	///display past n lines of stable storage above threshold
 	void read(int thres, int n) {
 
+	}
+
+	void set_file(string name) {
+		file_w.close();
+		file_r.close();
+		file = name;
+		file_w.open(name.c_str());
+		if (file_w.fail()) {
+			file_w.close();
+			throw runtime_error("Cannot create write log file.");
+		}
 	}
 
 	void write(int thresh, string line) {

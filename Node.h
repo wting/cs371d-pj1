@@ -1,18 +1,12 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <cassert>
-#include <iostream>
-#include <new>
 #include <stdexcept>
 #include <string>
 #include <boost/unordered_map.hpp>
-
-#ifdef DEBUG_OUTPUT
-	#define debug(arg) cout << (arg) << endl;
-#else
-	#define debug(arg) /* arg */
-#endif
+#include <boost/lexical_cast.hpp>
+//#include <boost/asio.hpp>
+#include "Logger.h"
 
 using namespace std;
 using namespace boost;
@@ -21,24 +15,50 @@ namespace dist {
 class Node {
 	string socket;
 	string status;
+	int socket_num;
 	unordered_map<string, string> song_list;
 	unordered_map<string, string> node_list;
+	Logger log;
 
     public:
 	Node() {
+		socket_num = 10000;
+		log.set_file(lexical_cast<string>("socket_") + lexical_cast<string>(socket_num) + lexical_cast<string>(".log"));
+		log.write(0,"socket_num: " + lexical_cast<string>(socket_num));
 	}
 
-	//Song related functions
-	void add(string song) {
+	~Node() {
+		log.read();
+	}
+
+	void parse(string in) {
+		log.write(5,"input: " + in);
+	}
+
+	//song related functions
+	void add(string song, string url) {
+		if (song_list.find(song) == song_list.end())
+			song_list[song] = url;
+		else
+			throw runtime_error("add failed, song already exists.");
 	}
 
 	void del(string song) {
+		/*if (song_list.find(song) == song_list.end())
+			throw runtime_error("delete failed, song does not exist.");
+		else
+			song_list.erase(song);*/
+		song_list.erase(song);
 	}
 
 	void edit(string song, string url) {
+		if (song_list.find(song) == song_list.end())
+			throw runtime_error("edit failed, song does not exist.");
+		else
+			song_list[song] = url;
 	}
 
-	//Node related functions
+	//network related functions
 	bool connect() {
 		return true;
 	}

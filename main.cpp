@@ -6,36 +6,24 @@
 	\author Will Warner
 */
 
-#include "Logger.h"
+#include <iostream>
+#include <fstream>
+#include <string>
 #include "Node.h"
 
-#ifdef DEBUG_OUTPUT
-	#define debug(arg) cout << (arg) << endl;
-#else
-	#define debug(arg) /* arg */
-#endif
+using namespace std;
 
 int main(int argc, char* argv[]) {
-    using namespace std;
-    using namespace dist;
+	dist::Node* N = new dist::Node();
 
-	/*Node* A = new Node();
-	delete A;
-	*/
-
-	Logger log(true,0,"socket_fake.log");
-
-	string input;
+	string line;
 	while (true) {
-		//cin >> input;
-		getline(cin,input);
+		getline(cin,line);
 		if (cin.eof())
 			break;
-		log.write(0,"input line: " + input);
+		N->parse(line);
 	}
 
-	log.read();
-	//log.read_head(1);
-	//log.read_tail(2);
+	delete N;
     return 0;
 }
