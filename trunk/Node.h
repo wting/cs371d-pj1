@@ -13,12 +13,13 @@ using namespace boost;
 namespace dist {
 
 class Node {
-	string socket;
-	string status;
-	int socket_num;
 	unordered_map<string, string> song_list;
 	unordered_map<string, string> node_list;
 	Logger log;
+
+	string socket;
+	string status;
+	int socket_num;
 
     public:
 	Node() {

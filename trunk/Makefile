@@ -12,6 +12,7 @@ TEST = Test$(PROJ)
 IN_PROF = in_profile
 SVN_FILE = Subversion.log
 
+SYS = `hostname | cut -d. -f2-`
 ### compiler definitions
 #CC = /lusr/opt/gcc-4.3.0/bin/g++
 CC = g++
@@ -26,11 +27,10 @@ CFLAGS = -ansi -pedantic -Wall -I /public/linux/include/boost-1_38/ #-std=gnu++0
 ### make options
 main: $(MAIN).$(EXT)
 	clear
+	echo $(SYS)
 	$(CC) $(CFLAGS)	-O2 -o $(APP) $(MAIN).$(EXT)
 	#valgrind $(APP) <$(INPUT) 
-	valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
-	less $(PROJ).out
-	rm -f $(PROJ).out
+	./$(APP)
 
 profile: $(MAIN).$(EXT)
 	clear
@@ -42,9 +42,10 @@ profile: $(MAIN).$(EXT)
 debug: $(MAIN).$(EXT)
 	clear
 	$(CC) $(CFLAGS)	-O2 -DDEBUG_OUTPUT -o $(APP) $(MAIN).$(EXT)
-	./$(APP) >$(PROJ).out 2>&1
-	less $(PROJ).out
-	rm -f $(PROJ).out
+	./$(APP) <$(INPUT)
+	#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
+	#less $(PROJ).out
+	#rm -f $(PROJ).out
 
 gdb: $(MAIN).$(EXT)
 	clear
@@ -64,6 +65,10 @@ debug-test: $(MAIN).$(EXT)
 	$(CC) $(CFLAGS) -lcppunit -ldl -DDEBUG_OUTPUT -DTEST -o $(APP) $(MAIN).$(EXT)
 	###Valgrind...
 	./$(APP) >$(PROJ).out 2>&1 && less $(PROJ).out || ./$(APP)
+
+clean:
+	rm -f $(APP)
+	rm -f *.out
 
 docs: Doxyfile
 	doxygen Doxyfile
