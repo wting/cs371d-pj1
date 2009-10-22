@@ -14,21 +14,13 @@ SVN_FILE = Subversion.log
 
 ### compiler definitions
 CC = g++
-CFLAGS = -ansi -pedantic -Wall -I ~/lib/boost-1_38_0/
+CFLAGS = -ansi -pedantic -Wall
 
-#ifeq ($(SYS),cs.utexas.edu)
-	#CC+=-I /public/linux/include/boost-1_38/
-#else
-	#CC+=-std=gnu++0x
-#endif
-
-#ifeq (`hostname | cut -d. -f2-`,cs.utexas.edu) #conditional not working
-	#CC = /lusr/opt/gcc-4.3.0/bin/g++
-#else
-	#CC = g++
-#endif
-
-
+ifeq ($(shell hostname | cut -d. -f2-),cs.utexas.edu)
+	CFLAGS += -I /public/linux/include/boost-1_38/ #for cs machines
+else
+	CFLAGS += -I ~/boost_1_38_0/
+endif
 
 ### make options
 main: $(MAIN).$(EXT)
