@@ -27,10 +27,10 @@ CFLAGS = -ansi -pedantic -Wall -I /public/linux/include/boost-1_38/ #-std=gnu++0
 main: $(MAIN).$(EXT)
 	clear
 	$(CC) $(CFLAGS)	-O2 -o $(APP) $(MAIN).$(EXT)
-	valgrind $(APP) <$(INPUT) 
-	#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
-	#less $(PROJ).out
-	#rm -f $(PROJ).out
+	#valgrind $(APP) <$(INPUT) 
+	valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
+	less $(PROJ).out
+	rm -f $(PROJ).out
 
 profile: $(MAIN).$(EXT)
 	clear
