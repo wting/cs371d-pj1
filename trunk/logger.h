@@ -6,6 +6,7 @@
 #include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
+
 #include "aux.h"
 
 using namespace std;

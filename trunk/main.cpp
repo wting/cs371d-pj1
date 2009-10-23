@@ -12,9 +12,11 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+
 #include "aux.h"
 #include "logger.h"
 #include "node.h"
+#include "network.h"
 
 using namespace std;
 using namespace aux;
