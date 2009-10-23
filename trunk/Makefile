@@ -23,16 +23,22 @@ CFLAGS += $(INC)
 ### make options
 main: $(MAIN).$(EXT)
 	clear
-	echo $(SYS)
+	### COMPILING
 	$(CC) $(CFLAGS)	$(MAIN).$(EXT) $(LIB)
 	@#valgrind $(APP) <$(INPUT) 
-	./$(APP)
+
+	@echo "\n"
+	### EXECUTING
+	@./$(APP)
 
 debug: $(MAIN).$(EXT)
-	$(CFLAGS) += -DDEBUG
 	clear
+	### COMPILING
 	$(CC) $(CFLAGS)	-DDEBUG $(MAIN).$(EXT) $(LIB)
-	./$(APP) <$(INPUT)
+
+	@echo "\n"
+	### EXECUTING
+	@./$(APP) <$(INPUT)
 	@#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
 	@#less $(PROJ).out
 	@#rm -f $(PROJ).out
@@ -45,6 +51,7 @@ gdb: $(MAIN).$(EXT)
 clean:
 	rm -f $(APP)
 	rm -f *.out
+	rm -f *.log
 
 docs: Doxyfile
 	doxygen Doxyfile
