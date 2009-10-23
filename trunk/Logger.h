@@ -6,9 +6,10 @@
 #include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
-#include <boost/lexical_cast.hpp>
+#include "Aux.h"
 
 using namespace std;
+using namespace aux;
 
 class Logger {
 	bool display;
@@ -38,7 +39,7 @@ public:
 		threshold = thresh;
 		num_lines = 0;
 
-		file = boost::lexical_cast<string>("pid_") + boost::lexical_cast<string>(pid) + boost::lexical_cast<string>(".log");
+		file = to_str("pid_") + to_str(pid) + to_str(".log");
 		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
@@ -133,7 +134,7 @@ public:
 	void set_file(const T &input) {
 		file_w.close();
 		file_r.close();
-		file = boost::lexical_cast<string>(input);
+		file = to_str(input);
 		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
@@ -167,9 +168,18 @@ private:
 
 	template <typename T>
 	void print(const int &n, const int &t, const T &input) const {
-		if (t >= 0)
+		if (t >= 0) {
+			int tab = t;
+			if (tab > 5)
+				tab = 5;
+
+			while (tab < 5) {
+				cout << "    ";
+				++tab;
+			}
+
 			cout << process_id << "[" << setw(4) << n << "][" << t << "]: " << input << endl;
-		else
+		} else
 			cout << process_id << "[" << setw(4) << n << "]: " << input << endl;
 	}
 };

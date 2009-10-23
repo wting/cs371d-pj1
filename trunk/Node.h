@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <string>
 #include <boost/unordered_map.hpp>
-//#include <boost/lexical_cast.hpp>
 #include <boost/asio.hpp>
 #include "Logger.h"
 
