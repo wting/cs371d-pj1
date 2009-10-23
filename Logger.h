@@ -67,7 +67,7 @@ public:
 		while (!file_r.eof()) {
 			getline(file_r,line);
 			if (file_r.good())
-				cout << file << "[" << setw(4) << ++n << "]:\t" << line << endl;
+				cout << file << "[" << setw(4) << ++n << "]: " << line << endl;
 		}
 
 		file_r.close();
@@ -160,6 +160,12 @@ public:
 			file_w.close();
 			throw runtime_error("Cannot write to log file.");
 		}
+	}
+
+private:
+	template <typename T>
+	void print(const int &n, const T &input) const {
+		cout << file << "[" << setw(4) << n << "]: " << input << endl;
 	}
 };
 
