@@ -5,9 +5,11 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 #include <boost/asio.hpp>
+
 #include "logger.h"
 
 using namespace std;
+
 namespace dist {
 
 class node {
@@ -26,11 +28,11 @@ public:
 	node(logger* l) {
 		socket_num = 10000;
 		log = l;
-		log->write(0,"node constructor");
+		log->write(3,"dist::node()");
 	}
 
 	~node() {
-		log->write(0,"node destructor");
+		log->write(3,"dist::~node()");
 	}
 
 	void parse(string input) {
