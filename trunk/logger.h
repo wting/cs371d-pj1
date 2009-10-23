@@ -6,11 +6,12 @@
 #include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
+#include <unistd.h>		//sleep
 
 #include "aux.h"
 
 using namespace std;
-using namespace aux;
+using aux::to_str;
 
 class logger {
 	bool display;
@@ -44,7 +45,7 @@ public:
 		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
-			throw runtime_error("Cannot create write log file.");
+			throw runtime_error(to_str("Cannot create write log file") + file);
 		}
 	}
 
@@ -152,12 +153,13 @@ public:
 
 	template <typename T>
 	void write(const T &input) {
+		///\FIXME: incorrect file causes seg fault
 		file_w.clear();
 		file_w << input << endl;
 		++num_lines;
 		if (file_w.fail()) {
 			file_w.close();
-			throw runtime_error("Cannot write to log file.");
+			throw runtime_error("Cannot write to log file");
 		}
 	}
 

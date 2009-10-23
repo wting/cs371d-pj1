@@ -10,7 +10,7 @@ SVN_FILE = Subversion.log
 
 ### compiler definitions
 CC = g++
-CFLAGS = -o $(APP) -ansi -pedantic -Wall -pthread -O2
+CFLAGS = -o $(APP) -ansi -pedantic -Wall -pthread -O2 -ggdb
 
 ifeq ($(shell hostname | cut -d. -f2-),cs.utexas.edu)
 	INC = -I /public/linux/include/boost-1_38/ #for cs machines
@@ -42,6 +42,16 @@ debug: $(MAIN).$(EXT)
 	@#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
 	@#less $(PROJ).out
 	@#rm -f $(PROJ).out
+
+client:
+	$(CC) $(CFLAGS)	client.cpp -o client $(LIB)
+
+server:
+	$(CC) $(CFLAGS)	server.cpp -o server $(LIB)
+
+network:
+	$(CC) $(CFLAGS)	client.cpp -o client $(LIB)
+	$(CC) $(CFLAGS)	server.cpp -o server $(LIB)
 
 gdb: $(MAIN).$(EXT)
 	clear
