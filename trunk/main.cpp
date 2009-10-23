@@ -29,14 +29,12 @@ int main(int argc, char* argv[]) {
 	pid_t parent_ID = getpid();
 	pid_t pID = fork();
 	if (pID > 0) {
-		Logger log(true,getpid());
-		log.write(0,">>>parent");
-		//log.write(0,boost::lexical_cast<string>(">>>parent, id = ") + boost::lexical_cast<string>(parent_ID));
-		//cout << ">>>within parent" << endl;
-		//cout << ">parent pID (fork result) = " << pID << endl;
-		//cout << ">parent_pID = " << parent_ID << endl;
+		Logger log(0,parent_ID);
+		log.write(0,">>>parent process");
+		log.write(0,boost::lexical_cast<string>("forked child (pid = ") + boost::lexical_cast<string>(pID) + boost::lexical_cast<string>(")"));
 	} else if (pID == 0) {
-		//cout << ">>>within child" << endl;
+		Logger log(0,getpid());
+		log.write(0,">>>child process");
 		dist::Node* N = new dist::Node();
 		//cout << ">child, pID = " << getpid() << endl;
 		//cout << ">child's parent_pID = " << parent_ID << endl;
