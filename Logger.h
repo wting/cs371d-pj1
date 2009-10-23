@@ -48,10 +48,12 @@ public:
 
 	///\TODO: delete write log?
 	~Logger() {
-		cout << "\n~Logger()" << endl;
-		this->read();
+		//cout << "\n~Logger()" << endl;
+		//this->read();
 		file_w.close();
 		file_r.close();
+		if (remove(file.c_str()))
+			cerr << "Error deleting file: " << file << endl;
 	}
 
 	///display entire stable storage
@@ -67,16 +69,14 @@ public:
 		while (!file_r.eof()) {
 			getline(file_r,line);
 			if (file_r.good())
-				cout << file << "[" << setw(4) << ++n << "]: " << line << endl;
+				print(++n, line);
 		}
 
 		file_r.close();
 	}
 
 	///display first n lines of stable storage
-	///\TODO: modify output to match read()
 	void read_head(int num) {
-		cout << ">>>displaying first " << num << " lines of write log [" << file << "]" << endl;
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -87,16 +87,14 @@ public:
 		string line;
 		while (n <= num && !file_r.eof()) {
 			getline(file_r,line);
-			cout << setw(8) << n++ << ": " << line << endl;
+			print(n++,line);
 		}
 
 		file_r.close();
 	}
 
 	///display last n lines of stable storage
-	///\TODO: modify output to match read()
 	void read_tail(int num) {
-		cout << ">>>displaying last " << num << " lines of write log [" << file << "]" << endl;
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -120,7 +118,7 @@ public:
 		while (!file_r.eof()) {
 			getline(file_r,line);
 			if (n > (size - num) && file_r.good())
-				cout << setw(8) << n << ": " << line << endl;
+				print(n,line);
 			++n;
 		}
 
@@ -147,7 +145,7 @@ public:
 	template <typename T>
 	void write(int thresh, T input) {
 		if (thresh >= threshold)
-			cout << file << "[" << setw(4) << num_lines+1 << "]:\t" << input << endl;
+			print(num_lines+1, input);
 		write(input);
 	}
 
