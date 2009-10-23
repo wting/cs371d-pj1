@@ -5,18 +5,19 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 #include <boost/lexical_cast.hpp>
-//#include <boost/asio.hpp>
+#include <boost/asio.hpp>
 #include "Logger.h"
 
 using namespace std;
-using namespace boost;
 namespace dist {
 
 class Node {
-	unordered_map<string, string> song_list;
-	unordered_map<string, string> node_list;
+	boost::unordered_map<string, string> song_list;
+	boost::unordered_map<string, string> node_list;
 	Logger log;
 
+	//socket related stuff
+	boost::asio::io_service io;
 	string socket;
 	string status;
 	int socket_num;
@@ -24,8 +25,8 @@ class Node {
     public:
 	Node() {
 		socket_num = 10000;
-		log.set_file(lexical_cast<string>("socket_") + lexical_cast<string>(socket_num) + lexical_cast<string>(".log"));
-		log.write(0,"socket_num: " + lexical_cast<string>(socket_num));
+		log.set_file(boost::lexical_cast<string>("socket_") + boost::lexical_cast<string>(socket_num) + boost::lexical_cast<string>(".log"));
+		log.write(0,"socket_num: " + boost::lexical_cast<string>(socket_num));
 	}
 
 	~Node() {
