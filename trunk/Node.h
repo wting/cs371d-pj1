@@ -22,15 +22,8 @@ class Node {
 	int socket_num;
 
 	Logger* log;
+
 public:
-
-	Node() {
-		socket_num = 10000;
-		log = 0;
-		//log.set_file(boost::lexical_cast<string>("socket_") + boost::lexical_cast<string>(socket_num) + boost::lexical_cast<string>(".log"));
-		//log.write(0,"socket_num: " + boost::lexical_cast<string>(socket_num));
-	}
-
 	Node(Logger* l) {
 		socket_num = 10000;
 		log = l;
