@@ -22,7 +22,7 @@ class Logger {
 	int process_id;
 
 public:
-	///\TODO: add custom string
+	///\TODO: add custom stream to write to
 	//Logger(bool disp, int thresh, ostringstream &out, string file = "") { }
 	Logger() {
 		display = true;
@@ -46,7 +46,6 @@ public:
 		}
 	}
 
-	///\TODO: delete write log?
 	~Logger() {
 		//cout << "\n~Logger()" << endl;
 		//this->read();
@@ -76,7 +75,7 @@ public:
 	}
 
 	///display first n lines of stable storage
-	void read_head(int num) {
+	void read_head(const int &num) {
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -94,7 +93,7 @@ public:
 	}
 
 	///display last n lines of stable storage
-	void read_tail(int num) {
+	void read_tail(const int &num) {
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -143,7 +142,7 @@ public:
 	}
 
 	template <typename T>
-	void write(int thresh, T input) {
+	void write(int thresh, const T &input) {
 		if (thresh >= threshold)
 			print(num_lines+1, input);
 		write(input);

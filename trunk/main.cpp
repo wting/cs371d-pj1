@@ -30,15 +30,13 @@ int main(int argc, char* argv[]) {
 	pid_t pID = fork();
 	if (pID > 0) {
 		Logger log(0,parent_ID);
-		log.write(0,">>>parent process");
+		log.write(5,">>>parent process");
 		log.write(0,boost::lexical_cast<string>("forked child (pid = ") + boost::lexical_cast<string>(pID) + boost::lexical_cast<string>(")"));
 	} else if (pID == 0) {
 		Logger log(0,getpid());
-		log.write(0,">>>child process");
-		dist::Node* N = new dist::Node();
-		//cout << ">child, pID = " << getpid() << endl;
-		//cout << ">child's parent_pID = " << parent_ID << endl;
-		//N->log.write(0,"child process writing to log");
+		log.write(5,">>>child process");
+		dist::Node* N = new dist::Node(&log);
+
 		delete N;
 	} else {
 		cerr << "Failed to fork" << endl;
