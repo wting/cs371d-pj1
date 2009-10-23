@@ -6,31 +6,40 @@
 #include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
 class Logger {
 	bool display;
 	int threshold;
+	int num_lines;
 	//ostringstream stream;
 	string file;
 	ofstream file_w;
 	ifstream file_r;
 
-	public:
+	int process_id;
+
+public:
 	///\TODO: add custom string
 	//Logger(bool disp, int thresh, ostringstream &out, string file = "") { }
 	Logger() {
 		display = true;
 		threshold = 0;
+		num_lines = 0;
 		file = "";
+		process_id = 0;
 	}
 
-	Logger(bool disp, int thresh=0, string name = "") {
+	Logger(bool disp, int pid = 0, int thresh = 0) {
 		display = disp;
+		process_id = pid;
 		threshold = thresh;
-		file = name;
-		file_w.open(name.c_str());
+		num_lines = 0;
+
+		file = boost::lexical_cast<string>("pid_") + boost::lexical_cast<string>(pid) + boost::lexical_cast<string>(".log");
+		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
 			throw runtime_error("Cannot create write log file.");
@@ -39,33 +48,35 @@ class Logger {
 
 	///\TODO: delete write log?
 	~Logger() {
+		cout << "\n~Logger()" << endl;
+		this->read();
 		file_w.close();
 		file_r.close();
 	}
 
 	///display entire stable storage
 	void read() {
-		cout << ">>>displaying write log" << endl;
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
 			throw runtime_error("Cannot open write log file.");
 		}
 
-		int n=1;
+		int n=0;
 		string line;
 		while (!file_r.eof()) {
 			getline(file_r,line);
 			if (file_r.good())
-				cout << setw(8) << n++ << ": " << line << endl;
+				cout << file << "[" << setw(4) << ++n << "]:\t" << line << endl;
 		}
 
 		file_r.close();
 	}
 
 	///display first n lines of stable storage
+	///\TODO: modify output to match read()
 	void read_head(int num) {
-		cout << ">>>displaying first " << num << " lines of write log" << endl;
+		cout << ">>>displaying first " << num << " lines of write log [" << file << "]" << endl;
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -83,8 +94,9 @@ class Logger {
 	}
 
 	///display last n lines of stable storage
+	///\TODO: modify output to match read()
 	void read_tail(int num) {
-		cout << ">>>displaying last " << num << " lines of write log" << endl;
+		cout << ">>>displaying last " << num << " lines of write log [" << file << "]" << endl;
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
@@ -120,26 +132,30 @@ class Logger {
 
 	}
 
-	void set_file(string name) {
+	template <typename T>
+	void set_file(const T &input) {
 		file_w.close();
 		file_r.close();
-		file = name;
-		file_w.open(name.c_str());
+		file = boost::lexical_cast<string>(input);
+		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
 			throw runtime_error("Cannot create write log file.");
 		}
 	}
 
-	void write(int thresh, string line) {
+	template <typename T>
+	void write(int thresh, T input) {
 		if (thresh >= threshold)
-			cout << line << endl;
-		write(line);
+			cout << file << "[" << setw(4) << num_lines+1 << "]:\t" << input << endl;
+		write(input);
 	}
 
-	void write(string line) {
+	template <typename T>
+	void write(const T &input) {
 		file_w.clear();
-		file_w << line << endl;
+		file_w << input << endl;
+		++num_lines;
 		if (file_w.fail()) {
 			file_w.close();
 			throw runtime_error("Cannot write to log file.");

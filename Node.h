@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <boost/unordered_map.hpp>
-#include <boost/lexical_cast.hpp>
+//#include <boost/lexical_cast.hpp>
 #include <boost/asio.hpp>
 #include "Logger.h"
 
@@ -14,7 +14,6 @@ namespace dist {
 class Node {
 	boost::unordered_map<string, string> song_list;
 	boost::unordered_map<string, string> node_list;
-	Logger log;
 
 	//socket related stuff
 	boost::asio::io_service io;
@@ -22,19 +21,21 @@ class Node {
 	string status;
 	int socket_num;
 
-    public:
+public:
+	//Logger log;
+
 	Node() {
 		socket_num = 10000;
-		log.set_file(boost::lexical_cast<string>("socket_") + boost::lexical_cast<string>(socket_num) + boost::lexical_cast<string>(".log"));
-		log.write(0,"socket_num: " + boost::lexical_cast<string>(socket_num));
+		//log.set_file(boost::lexical_cast<string>("socket_") + boost::lexical_cast<string>(socket_num) + boost::lexical_cast<string>(".log"));
+		//log.write(0,"socket_num: " + boost::lexical_cast<string>(socket_num));
 	}
 
 	~Node() {
-		log.read();
+		//log.read();
 	}
 
 	void parse(string in) {
-		log.write(5,"input: " + in);
+		//log.write(5,"input: " + in);
 	}
 
 	//song related functions
