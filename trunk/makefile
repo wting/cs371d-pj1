@@ -1,10 +1,10 @@
 ### macro definitions
-PROJ = Node
+PROJ = node
 SVN_LOC = http://cs371d-pj1.googlecode.com/svn/trunk/
 
 MAIN = main
 EXT = cpp
-APP = node
+APP = app
 INPUT = input
 SVN_FILE = Subversion.log
 

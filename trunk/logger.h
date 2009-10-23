@@ -6,12 +6,12 @@
 #include <fstream>		//istream, ostream
 #include <stdexcept>
 #include <string>
-#include "Aux.h"
+#include "aux.h"
 
 using namespace std;
 using namespace aux;
 
-class Logger {
+class logger {
 	bool display;
 	int threshold;
 	int num_lines;
@@ -24,8 +24,8 @@ class Logger {
 
 public:
 	///\TODO: add custom stream to write to
-	//Logger(bool disp, int thresh, ostringstream &out, string file = "") { }
-	Logger() {
+	//logger(bool disp, int thresh, ostringstream &out, string file = "") { }
+	logger() {
 		display = true;
 		threshold = 0;
 		num_lines = 0;
@@ -33,7 +33,7 @@ public:
 		process_id = 0;
 	}
 
-	Logger(bool disp, int pid = 0, int thresh = 0) {
+	logger(bool disp, int pid = 0, int thresh = 0) {
 		display = disp;
 		process_id = pid;
 		threshold = thresh;
@@ -47,8 +47,8 @@ public:
 		}
 	}
 
-	~Logger() {
-		//cout << "\n~Logger()" << endl;
+	~logger() {
+		//cout << "\n~logger()" << endl;
 		//this->read();
 		file_w.close();
 		file_r.close();
