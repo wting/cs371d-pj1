@@ -6,8 +6,8 @@
 
 namespace aux {
 	template <typename T>
-	string to_str(const T &input) {
-		return boost::lexical_cast<string>(input);
+	std::string to_str(const T &input) {
+		return boost::lexical_cast<std::string>(input);
 	}
 }
 
