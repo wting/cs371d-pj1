@@ -34,8 +34,15 @@ public:
 		log->write(0,"node destructor");
 	}
 
-	void parse(string in) {
-		//log.write(5,"input: " + in);
+	void parse(string input) {
+		//if (validate_input(input))
+
+		//log.write(5,"input: " + input);
+	}
+
+	///\TODO:finish
+	bool validate_input(string input) {
+		return true;
 	}
 
 	//song related functions
