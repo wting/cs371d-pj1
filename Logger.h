@@ -144,7 +144,7 @@ public:
 	template <typename T>
 	void write(int thresh, const T &input) {
 		if (thresh >= threshold)
-			print(num_lines+1, input);
+			print(num_lines+1, thresh, input);
 		write(input);
 	}
 
@@ -162,7 +162,15 @@ public:
 private:
 	template <typename T>
 	void print(const int &n, const T &input) const {
-		cout << file << "[" << setw(4) << n << "]: " << input << endl;
+		print(n,-1,input);
+	}
+
+	template <typename T>
+	void print(const int &n, const int &t, const T &input) const {
+		if (t >= 0)
+			cout << process_id << "[" << setw(4) << n << "][" << t << "]: " << input << endl;
+		else
+			cout << process_id << "[" << setw(4) << n << "]: " << input << endl;
 	}
 };
 
