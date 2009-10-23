@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
 		log.write(5,"child process beg");
 		dist::Node* N = new dist::Node(&log);
 
-		delete N;
 
+		delete N;
 		//while (!child_exit) {;}
 		log.write(5,"child process end");
 	} else {
