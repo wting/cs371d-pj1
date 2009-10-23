@@ -12,9 +12,9 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include "Aux.h"
-#include "Logger.h"
-#include "Node.h"
+#include "aux.h"
+#include "logger.h"
+#include "node.h"
 
 using namespace std;
 using namespace aux;
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	pid_t parent_ID = getpid();
 	pid_t pID = fork();
 	if (pID > 0) {
-		Logger log(0,parent_ID);
+		logger log(0,parent_ID);
 		log.write(5,"parent process beg");
 		log.write(0,to_str("forked child (pid = ") + to_str(pID) + to_str(")"));
 
@@ -55,12 +55,12 @@ int main(int argc, char* argv[]) {
 		waitpid(pID,0,0);
 		log.write(5,"parent process end");
 	} else if (pID == 0) {
-		Logger log(0,getpid());
+		logger log(0,getpid());
 		log.write(5,"child process beg");
-		dist::Node* N = new dist::Node(&log);
+		dist::node* n = new dist::node(&log);
 
 
-		delete N;
+		delete n;
 		//while (!child_exit) {;}
 		log.write(5,"child process end");
 	} else {

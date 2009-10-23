@@ -5,12 +5,12 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 #include <boost/asio.hpp>
-#include "Logger.h"
+#include "logger.h"
 
 using namespace std;
 namespace dist {
 
-class Node {
+class node {
 	boost::unordered_map<string, string> song_list;
 	boost::unordered_map<string, string> node_list;
 
@@ -20,16 +20,16 @@ class Node {
 	string status;
 	int socket_num;
 
-	Logger* log;
+	logger* log;
 
 public:
-	Node(Logger* l) {
+	node(logger* l) {
 		socket_num = 10000;
 		log = l;
 		log->write(0,"node constructor");
 	}
 
-	~Node() {
+	~node() {
 		log->write(0,"node destructor");
 	}
 
