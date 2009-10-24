@@ -24,6 +24,11 @@ class logger {
 
 	int process_id;
 
+	template <typename T>
+	void print_error(const T &input) const {
+		cerr << process_id << "[xxxx][666]: " << input << endl;
+	}
+
 public:
 	///\TODO: add custom stream to write to
 	//logger(bool disp, int thresh, ostringstream &out, string file = "") { }
@@ -45,7 +50,8 @@ public:
 		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
-			throw runtime_error(to_str("Cannot create write log file") + file);
+			//throw runtime_error(to_str("Cannot create write log file") + file);
+			print_error(to_str("Cannot create write log file") + file);
 		}
 	}
 
@@ -55,7 +61,8 @@ public:
 		file_w.close();
 		file_r.close();
 		if (remove(file.c_str()))
-			cerr << "Error deleting file: " << file << endl;
+			//cerr << "Error deleting file: " << file << endl;
+			print_error(to_str("Error deleting file: ") + to_str(file));
 	}
 
 	///display entire stable storage
@@ -63,7 +70,8 @@ public:
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
-			throw runtime_error("Cannot open write log file.");
+			//throw runtime_error("Cannot open write log file.");
+			print_error(to_str("Cannot open write log file") + file);
 		}
 
 		int n=0;
@@ -82,7 +90,8 @@ public:
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
-			throw runtime_error("Cannot open write log file.");
+			//throw runtime_error("Cannot open write log file.");
+			print_error(to_str("Cannot open write log file") + file);
 		}
 
 		int n=1;
@@ -100,7 +109,8 @@ public:
 		file_r.open(file.c_str());
 		if (file_r.fail()) {
 			file_r.close();
-			throw runtime_error("Cannot open write log file.");
+			//throw runtime_error("Cannot open write log file.");
+			print_error(to_str("Cannot open write log file") + file);
 		}
 
 		//count number of lines
@@ -140,7 +150,8 @@ public:
 		file_w.open(file.c_str());
 		if (file_w.fail()) {
 			file_w.close();
-			throw runtime_error("Cannot create write log file.");
+			//throw runtime_error("Cannot create write log file.");
+			print_error(to_str("Cannot create write log file") + file);
 		}
 	}
 
@@ -159,7 +170,8 @@ public:
 		++num_lines;
 		if (file_w.fail()) {
 			file_w.close();
-			throw runtime_error("Cannot write to log file");
+			//throw runtime_error("Cannot write to log file");
+			print_error(to_str("Cannot write to log file") + file);
 		}
 	}
 
