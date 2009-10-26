@@ -11,18 +11,21 @@ SVN_FILE = Subversion.log
 ### compiler definitions
 CC = g++
 CFLAGS = -o $(APP) -ansi -pedantic -Wall -pthread -O2 -ggdb
+BOOST_ROOT = ~/boost/
+LIB =
 
 ifeq ($(shell hostname | cut -d. -f2-),cs.utexas.edu)
-	INC = -I /public/linux/include/boost-1_38/ #for cs machines
+	BOOST_ROOT = /public/linux/include/boost-1_38/
 	LIB = /public/linux/lib/libboost_system-gcc42-mt-1_38.a
 else
-	INC = -I ~/boost_1_38_0/
+	BOOST_ROOT = ~/boost/
+	LIB = ~/lib/boost/lib/libboost_system-gcc43-mt.a
 endif
-CFLAGS += $(INC)
+CFLAGS += -I $(BOOST_ROOT)
 
 ### make options
 main: $(MAIN).$(EXT)
-	clear
+	@clear
 	### COMPILING
 	$(CC) $(CFLAGS)	$(MAIN).$(EXT) $(LIB)
 	@#valgrind $(APP) <$(INPUT) 
@@ -32,7 +35,7 @@ main: $(MAIN).$(EXT)
 	@./$(APP)
 
 debug: $(MAIN).$(EXT)
-	clear
+	@clear
 	### COMPILING
 	$(CC) $(CFLAGS)	-DDEBUG $(MAIN).$(EXT) $(LIB)
 
@@ -50,11 +53,12 @@ server:
 	$(CC) $(CFLAGS)	server.cpp -o server $(LIB)
 
 network:
+	@clear
 	$(CC) $(CFLAGS)	client.cpp -o client $(LIB)
 	$(CC) $(CFLAGS)	server.cpp -o server $(LIB)
 
 gdb: $(MAIN).$(EXT)
-	clear
+	@clear
 	$(CC) $(CFLAGS) -ggdb -DDEBUG $(MAIN).$(EXT)
 	gdb $(APP)
 
