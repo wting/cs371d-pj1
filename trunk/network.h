@@ -30,9 +30,11 @@ class client :
 
 public:
 	client(string h, string p, logger* l) {
+		log = l;
+		log->write(2,"network::client()");
 		host = h;
 		port = p;
-		log = l;
+		log->write(2,"network::~client()");
 	}
 
 	/*client(boost::asio::io_service& io, string h, string p, logger* l) //:
@@ -111,14 +113,20 @@ public:
 				throw boost::system::system_error(error);
 
 			char ack[1024];
-			char* reply = (char*) malloc(msg.size());
+			//char* reply = (char*) malloc(msg.size());
+			string reply;
 
 			log->write(3,to_str("sending:  ") + msg);
 			log->write(0,"write buffer");
 			boost::asio::write(s,boost::asio::buffer(msg,msg.size()));
 			log->write(0,"read  buffer");
 			boost::asio::read(s,boost::asio::buffer(ack,msg.size()));
-			strncpy(reply,ack,msg.size());
+			reply = to_str(ack).substr(0,msg.size());
+			/*strncpy(reply,ack,msg.size());
+			std::cout << "response debug (msg.size()): " << msg.size() << std::endl;
+			std::cout << "response debug (ack): " << ack << std::endl;
+			std::cout << "response debug (reply): " << reply << std::endl;
+			*/
 			log->write(3,to_str("response: ") + to_str(reply));
 
 			s.close();
