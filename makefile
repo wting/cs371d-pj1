@@ -32,7 +32,7 @@ main: $(MAIN).$(EXT)
 
 	@echo "\n"
 	### EXECUTING
-	@./$(APP)
+	@./$(APP) 10000
 
 debug: $(MAIN).$(EXT)
 	@clear

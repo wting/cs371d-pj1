@@ -10,11 +10,11 @@ using namespace std;
 int main(int argc, char* argv[]) {
 	logger* log = new logger(0,getpid());
 
-	boost::asio::io_service io;
 	if (argc != 3) {
 		cerr << "Usage: blocking_tcp_echo_client <host> <port>" << endl;
 		return 1;
 	}
+	boost::asio::io_service io;
 
 	/*{
 		network::client cl(io,argv[1],argv[2],log);
