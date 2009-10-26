@@ -16,8 +16,22 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	{
+	/*{
 		network::client cl(io,argv[1],argv[2],log);
+		string line;
+		while (true) {
+			cout << "input: ";
+			getline(cin,line);
+			if (line.compare("exit") == 0 || cin.eof())
+				break;
+			cl.send(line);
+		}
+		cout << endl;
+	} // force ~client() to prevent destroying log
+	*/
+
+	{
+		network::client cl(argv[1],argv[2],log);
 		string line;
 		while (true) {
 			cout << "input: ";
