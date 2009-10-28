@@ -8,7 +8,6 @@
 
 #include "aux.h"
 #include "logger.h"
-#include "network.h"
 
 using namespace std;
 using aux::to_str;
@@ -26,24 +25,9 @@ class node {
 	logger* log;
 
 public:
-	node(boost::asio::io_service& io, string p, logger* l) {
+	node(logger *l) {
 		log = l;
 		log->write(2,"dist::node()");
-		port = boost::lexical_cast<short int>(p);
-
-		try {
-			log->write(3,to_str("server creation on port ") + p);
-			network::server s(io, port);
-
-			log->write(3,"server running");
-			io.run();
-
-			log->write(3,"server exiting");
-		} catch (...) {
-			log->write(100,"server creation failed");
-			throw;
-		}
-
 	}
 
 	~node() {

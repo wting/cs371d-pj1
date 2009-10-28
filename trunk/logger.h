@@ -26,7 +26,7 @@ class logger {
 
 	template <typename T>
 	void print_error(const T &input) const {
-		cerr << process_id << "[xxxx][666]: " << input << endl;
+		cerr << process_id << "[xxxx][xxx]: " << input << endl;
 	}
 
 public:
@@ -170,7 +170,6 @@ public:
 		++num_lines;
 		if (file_w.fail()) {
 			file_w.close();
-			//throw runtime_error("Cannot write to log file");
 			print_error(to_str("Cannot write to log file") + file);
 		}
 	}

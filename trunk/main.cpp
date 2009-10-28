@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	dist::node n();
 	pid_t parent_ID = getpid();
 	pid_t c_id = fork();
 	if (c_id > 0) { //parent process
@@ -54,7 +55,6 @@ int main(int argc, char* argv[]) {
 			while (true) {
 				int c_status = 0;
 				waitpid(-1,&c_status,WNOHANG);
-				cout << "child status = " << c_status << endl;
 				if (c_status != 0) {
 					log.write(100,"problem with child process detected");
 					break;
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 
 				if (cin.eof() || line.compare("exit") == 0)
 					break;
-				log.write(4,to_str("sending input to child process = ") + line);
+				log.write(4,to_str("sending input to localhost:" + to_str(argv[1]) + ": ") + line);
 				cl.send(line);
 			}
 		}
@@ -82,16 +82,22 @@ int main(int argc, char* argv[]) {
 		logger log(0,getpid());
 		log.write(5,"child process begin");
 		boost::asio::io_service io;
+		//dist::node n();
 
-		dist::node* n = NULL;
 		try {
-			n = new dist::node(io,argv[1],&log);
+			log.write(3,to_str("server creation on port ") + to_str(argv[1]));
+			network::server s(io,argv[1],&log);
+
+			log.write(3,"server running");
+			io.run();
+
+			log.write(3,"server exiting");
 		} catch (...) {
-			log.write(100,"node creation failed");
+			log.write(100,"server creation failed");
 			log.write(5,"child process end");
 			exit(1);
+			throw;
 		}
-		delete n;
 
 		log.write(5,"child process end");
 	} else {
