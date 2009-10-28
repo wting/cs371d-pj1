@@ -30,9 +30,10 @@ main: $(MAIN).$(EXT)
 	$(CC) $(CFLAGS)	$(MAIN).$(EXT) $(LIB)
 	@#valgrind $(APP) <$(INPUT) 
 
+run: main
 	@echo "\n"
 	### EXECUTING
-	@./$(APP) 10000
+	./$(APP) 10000
 
 debug: $(MAIN).$(EXT)
 	@clear
@@ -41,7 +42,7 @@ debug: $(MAIN).$(EXT)
 
 	@echo "\n"
 	### EXECUTING
-	@./$(APP) <$(INPUT)
+	@./$(APP) 10000 < $(INPUT)
 	@#valgrind $(APP) <$(INPUT) >$(PROJ).out 2>&1
 	@#less $(PROJ).out
 	@#rm -f $(PROJ).out
@@ -64,6 +65,8 @@ gdb: $(MAIN).$(EXT)
 
 clean:
 	rm -f $(APP)
+	rm -f client
+	rm -f server
 	rm -f *.out
 	rm -f *.log
 

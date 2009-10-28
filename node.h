@@ -29,12 +29,21 @@ public:
 	node(boost::asio::io_service& io, string p, logger* l) {
 		log = l;
 		log->write(2,"dist::node()");
-		log->write(3,to_str("creating server on port ") + p);
 		port = boost::lexical_cast<short int>(p);
-		network::server s(io, port);
 
-		log->write(3,"running server");
-		io.run();
+		try {
+			log->write(3,to_str("server creation on port ") + p);
+			network::server s(io, port);
+
+			log->write(3,"server running");
+			io.run();
+
+			log->write(3,"server exiting");
+		} catch (...) {
+			log->write(100,"server creation failed");
+			throw;
+		}
+
 	}
 
 	~node() {

@@ -183,6 +183,8 @@ private:
 
 	template <typename T>
 	void print(const int &n, const int &t, const T &input) const {
+		if (t == 100)
+			cout << "ERROR: ";
 		/*if (t >= 0) {  //adds tabs for different priority levels
 			int tab = t;
 			if (tab > 5)
