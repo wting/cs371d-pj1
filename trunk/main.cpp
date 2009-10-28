@@ -40,21 +40,25 @@ int main(int argc, char* argv[]) {
 	}
 
 	pid_t parent_ID = getpid();
-	pid_t pID = fork();
-	if (pID > 0) { //parent process
+	pid_t c_id = fork();
+	if (c_id > 0) { //parent process
 		logger log(0,parent_ID);
-		log.write(5,"parent process beg");
-		log.write(0,to_str("forked child (pid = ") + to_str(pID) + to_str(")"));
+		log.write(5,"parent process begin");
+		log.write(0,to_str("forked child (c_id = ") + to_str(c_id) + to_str(")"));
 
 		{
-			log.write(0,"creating network client to server");
+			log.write(0,to_str("client creation to port ") + to_str(argv[1]));
 			network::client cl("localhost",argv[1],&log);
 			string line;
-			log.write(2,"beginning input block");
+			//log.write(2,"beginning input block");
 			while (true) {
-				///\TODO:check if child process is dead by response of sending command to network socket
-				if (child_exit)
-					exit(0);
+				int c_status = 0;
+				waitpid(-1,&c_status,WNOHANG);
+				cout << "child status = " << c_status << endl;
+				if (c_status != 0) {
+					log.write(100,"problem with child process detected");
+					break;
+				}
 
 				cout << endl;
 				cout << "input: " << endl;
@@ -69,21 +73,26 @@ int main(int argc, char* argv[]) {
 
 		log.write(4,"request child process to terminate");
 		//send command to network socket
-		kill(pID,SIGINT);
+		kill(c_id,SIGINT);
 		//wait 3 sec, check for existence of child?  send kill command
-		waitpid(pID,0,0);
+		waitpid(c_id,0,0);
 
 		log.write(5,"parent process end");
-	} else if (pID == 0) { //child process
+	} else if (c_id == 0) { //child process
 		logger log(0,getpid());
-		log.write(5,"child process beg");
-		//dist::node* n = new dist::node(argv[1],&log);
+		log.write(5,"child process begin");
 		boost::asio::io_service io;
-		dist::node* n = new dist::node(io,argv[1],&log);
 
-		//while (!child_exit) {;}
-
+		dist::node* n = NULL;
+		try {
+			n = new dist::node(io,argv[1],&log);
+		} catch (...) {
+			log.write(100,"node creation failed");
+			log.write(5,"child process end");
+			exit(1);
+		}
 		delete n;
+
 		log.write(5,"child process end");
 	} else {
 		cerr << "Failed to fork" << endl;
