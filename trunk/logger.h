@@ -183,7 +183,7 @@ private:
 
 	template <typename T>
 	void print(const int &n, const int &t, const T &input) const {
-		if (t >= 0) {
+		/*if (t >= 0) {  //adds tabs for different priority levels
 			int tab = t;
 			if (tab > 5)
 				tab = 5;
@@ -194,7 +194,7 @@ private:
 			}
 
 			cout << process_id << "[" << setw(4) << n << "][" << t << "]: " << input << endl;
-		} else
+		} else*/
 			cout << process_id << "[" << setw(4) << n << "]: " << input << endl;
 	}
 };

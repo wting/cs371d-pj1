@@ -6,9 +6,12 @@
 #include <boost/unordered_map.hpp>
 #include <boost/asio.hpp>
 
+#include "aux.h"
 #include "logger.h"
+#include "network.h"
 
 using namespace std;
+using aux::to_str;
 
 namespace dist {
 
@@ -16,23 +19,26 @@ class node {
 	boost::unordered_map<string, string> song_list;
 	boost::unordered_map<string, string> node_list;
 
-	//socket related stuff
 	boost::asio::io_service io;
-	string socket;
+	short int port;
 	string status;
-	int socket_num;
 
 	logger* log;
 
 public:
-	node(logger* l) {
-		socket_num = 10000;
+	node(boost::asio::io_service& io, string p, logger* l) {
 		log = l;
-		log->write(3,"dist::node()");
+		log->write(2,"dist::node()");
+		log->write(3,to_str("creating server on port ") + p);
+		port = boost::lexical_cast<short int>(p);
+		network::server s(io, port);
+
+		log->write(3,"running server");
+		io.run();
 	}
 
 	~node() {
-		log->write(3,"dist::~node()");
+		log->write(2,"dist::~node()");
 	}
 
 	void parse(string input) {

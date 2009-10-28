@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <boost/asio.hpp>
 
 #include "aux.h"
 #include "logger.h"
@@ -24,12 +25,14 @@ using namespace aux;
 volatile bool child_exit = false;
 
 void sig_child(int sig) {
-	//cout << "caught signal " << sig << endl;
+	cout << "caught signal " << sig << endl;
+	cout << "\tpid = " << getpid() << endl;
 	child_exit = true;
 }
 
+///\TODO: log cleanup
 int main(int argc, char* argv[]) {
-	(void) signal(SIGINT,sig_child);
+	//(void) signal(SIGINT,sig_child); //finish signal catching
 
 	if (argc != 2) {
 		cerr << "Usage: " << argv[0] << " <port>" << endl;
@@ -38,47 +41,49 @@ int main(int argc, char* argv[]) {
 
 	pid_t parent_ID = getpid();
 	pid_t pID = fork();
-	if (pID > 0) {
-		logger* log = new logger(0,parent_ID);
-		log->write(5,"parent process beg");
-		log->write(0,to_str("forked child (pid = ") + to_str(pID) + to_str(")"));
+	if (pID > 0) { //parent process
+		logger log(0,parent_ID);
+		log.write(5,"parent process beg");
+		log.write(0,to_str("forked child (pid = ") + to_str(pID) + to_str(")"));
 
 		{
-			log->write(0,"creating network client to server");
-			network::client cl("localhost",argv[1],log);
+			log.write(0,"creating network client to server");
+			network::client cl("localhost",argv[1],&log);
 			string line;
-			log->write(2,"beginning input block");
+			log.write(2,"beginning input block");
 			while (true) {
 				///\TODO:check if child process is dead by response of sending command to network socket
 				if (child_exit)
 					exit(0);
 
 				cout << endl;
-				cout << "input: ";
+				cout << "input: " << endl;
 				getline(cin,line);
 
 				if (cin.eof() || line.compare("exit") == 0)
 					break;
-				log->write(4,to_str("sending input to child process = ") + to_str(line));
+				log.write(4,to_str("sending input to child process = ") + line);
 				cl.send(line);
 			}
 		}
 
-		log->write(4,"request child process to terminate");
+		log.write(4,"request child process to terminate");
 		//send command to network socket
 		kill(pID,SIGINT);
 		//wait 3 sec, check for existence of child?  send kill command
 		waitpid(pID,0,0);
 
-		log->write(5,"parent process end");
-		delete log;
-	} else if (pID == 0) {
+		log.write(5,"parent process end");
+	} else if (pID == 0) { //child process
 		logger log(0,getpid());
 		log.write(5,"child process beg");
-		dist::node* n = new dist::node(&log);
+		//dist::node* n = new dist::node(argv[1],&log);
+		boost::asio::io_service io;
+		dist::node* n = new dist::node(io,argv[1],&log);
+
+		//while (!child_exit) {;}
 
 		delete n;
-		while (!child_exit) {;}
 		log.write(5,"child process end");
 	} else {
 		cerr << "Failed to fork" << endl;
