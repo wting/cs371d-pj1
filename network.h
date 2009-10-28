@@ -16,12 +16,8 @@ using boost::asio::ip::tcp;
 
 namespace network {
 
-class client :
-	public boost::enable_shared_from_this<client>
-{
+class client : public boost::enable_shared_from_this<client> {
 	boost::asio::io_service io;
-	//tcp::socket sock;
-	//tcp::socket* p_sock;
 	string host;
 	string port;
 	size_t buffer_length;
@@ -34,63 +30,14 @@ public:
 		log->write(2,"network::client()");
 		host = h;
 		port = p;
-		log->write(2,"network::~client()");
 	}
-
-	/*client(boost::asio::io_service& io, string h, string p, logger* l) //:
-		//s(io)
-	{
-		try {
-			log = l;
-			log->write(2,"network::client()");
-
-			tcp::resolver resolver(io); //turns io into TCP endpoint
-			tcp::resolver::query query(tcp::v4(), h, p); //constructing query
-			tcp::resolver::iterator end_iterator = resolver.resolve(query); //turns query into list of endpoints
-			tcp::resolver::iterator end;
-
-			//creates socket and opens connection
-			log->write(0,to_str("creating socket to ") + h + to_str(":") + p);
-			//tcp::socket sock(io); //doesn't compile, doesn't socket need to be created after io's been modified?
-			tcp::socket s(io);
-			//p_sock = &tcp::socket sock(io);
-			//tcp::socket sock(io);
-			//socket = s(io);
-			//tpc::socket sock(io);
-			//socket = tcp::socket s(io);
-
-			boost::system::error_code error = boost::asio::error::host_not_found;
-			while (error && end_iterator != end) //iterate through all endpoints
-			{
-				s.close();
-				s.connect(*end_iterator++, error);
-			}
-			if (error)
-				throw boost::system::system_error(error);
-
-			log->write(1,"sending: test");
-			boost::asio::write(s,boost::asio::buffer("test",4));
-			char ack[4];
-			boost::asio::read(s,boost::asio::buffer(ack,4));
-			log->write(1,to_str("response: ") + to_str(ack));
-			//test();
-		} catch (exception& e) {
-			cerr << "Exception:" << e.what() << endl;
-		}
-	}*/
 
 	~client() {
 		log->write(2,"network::~client()");
 		log = 0; //do not delete log, should be handled by caller
-		//sock.close();
 	}
 
-	std::string send(string msg) {
-		/*log->write(1,to_str("sending: ") + to_str(msg));
-		boost::asio::write(sock,boost::asio::buffer(msg,msg.size()));
-		response(msg.size());
-		*/
-
+	string send(string msg) {
 		try {
 			log->write(4,to_str("send: ") + msg);
 
@@ -113,7 +60,6 @@ public:
 				throw boost::system::system_error(error);
 
 			char ack[1024];
-			//char* reply = (char*) malloc(msg.size());
 			string reply;
 
 			log->write(3,to_str("sending:  ") + msg);
@@ -122,11 +68,6 @@ public:
 			log->write(0,"read  buffer");
 			boost::asio::read(s,boost::asio::buffer(ack,msg.size()));
 			reply = to_str(ack).substr(0,msg.size());
-			/*strncpy(reply,ack,msg.size());
-			std::cout << "response debug (msg.size()): " << msg.size() << std::endl;
-			std::cout << "response debug (ack): " << ack << std::endl;
-			std::cout << "response debug (reply): " << reply << std::endl;
-			*/
 			log->write(3,to_str("response: ") + to_str(reply));
 
 			s.close();
@@ -138,17 +79,64 @@ public:
 
 		return NULL;
 	}
+};
 
-	/*void response(size_t len) {
-		//string ack;
-		//char ack[4];
-		//boost::asio::read(sock,boost::asio::buffer(ack,len));
-		//log->write(1,to_str("response: ") + to_str(ack));
-	}*/
+class session {
+public:
+	session(boost::asio::io_service& io_service) : socket_(io_service) { }
+
+	tcp::socket& socket() { return socket_; }
+
+	void start() {
+		socket_.async_read_some(boost::asio::buffer(data_, max_length),
+				boost::bind(&session::handle_read, this,
+				boost::asio::placeholders::error,
+				boost::asio::placeholders::bytes_transferred));
+	}
+
+	void handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
+		if (!error) {
+			boost::asio::async_write(socket_,
+					boost::asio::buffer(data_, bytes_transferred),
+					boost::bind(&session::handle_write, this,
+					boost::asio::placeholders::error));
+		} else { delete this; }
+	}
+
+	void handle_write(const boost::system::error_code& error) {
+		if (!error) {
+			socket_.async_read_some(boost::asio::buffer(data_, max_length),
+					boost::bind(&session::handle_read, this,
+					boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
+		} else { delete this; }
+	}
+
+private:
+	tcp::socket socket_;
+	enum { max_length = 1024 };
+	char data_[max_length];
 };
 
 class server {
+public:
+	server(boost::asio::io_service& io_service, short port) : io_service_(io_service),
+			acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {
+		session* new_session = new session(io_service_);
+		acceptor_.async_accept(new_session->socket(), boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
+	}
 
+	void handle_accept(session* new_session, const boost::system::error_code& error) {
+		if (!error) {
+			new_session->start();
+			new_session = new session(io_service_);
+			acceptor_.async_accept(new_session->socket(), boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
+		} else { delete new_session; }
+	}
+
+private:
+	boost::asio::io_service& io_service_;
+	tcp::acceptor acceptor_;
 };
 
 } // end namespace dist

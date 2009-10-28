@@ -4,7 +4,7 @@ SVN_LOC = http://cs371d-pj1.googlecode.com/svn/trunk/
 
 MAIN = main
 EXT = cpp
-APP = app
+APP = dcnode
 INPUT = input
 SVN_FILE = Subversion.log
 
