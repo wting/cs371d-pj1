@@ -7,8 +7,10 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/lexical_cast.hpp>
 #include "aux.h"
 #include "logger.h"
+#include "node.h"
 
 using namespace std;
 using aux::to_str;
@@ -16,7 +18,9 @@ using boost::asio::ip::tcp;
 
 namespace network {
 
-class client : public boost::enable_shared_from_this<client> {
+class client :
+	//keep alive as long as something is pointing to this
+	public boost::enable_shared_from_this<client> {
 	boost::asio::io_service io;
 	string host;
 	string port;
@@ -119,13 +123,36 @@ private:
 };
 
 class server {
+	boost::asio::io_service& io_service_;
+	tcp::acceptor acceptor_;
+
+	short int port;
+	dist::node* node;
+	logger* log;
+
 public:
-	server(boost::asio::io_service& io_service, short port) : io_service_(io_service),
-			acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) {
-		session* new_session = new session(io_service_);
-		acceptor_.async_accept(new_session->socket(), boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
+	server(boost::asio::io_service& io_service, string p, logger* l) :
+		//initializes io, acceptor to listen on port argument
+		io_service_(io_service), acceptor_(io_service, tcp::endpoint(tcp::v4(), boost::lexical_cast<short int>(p))) {
+			log = l;
+			log->write(5,"network::server()");
+			port = boost::lexical_cast<short int>(p);
+
+			node = new dist::node();
+
+			//creates new session for use with async
+			session* new_session = new session(io_service_);
+
+			//initiates async_accept operation to wait for new connections
+			acceptor_.async_accept(new_session->socket(), boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
 	}
 
+	~server() {
+		log->write(5,"network::~server()");
+		delete node;
+	}
+
+	//event handler called by async_accept, services client request and then initiates next async_accept operation
 	void handle_accept(session* new_session, const boost::system::error_code& error) {
 		if (!error) {
 			new_session->start();
@@ -133,12 +160,8 @@ public:
 			acceptor_.async_accept(new_session->socket(), boost::bind(&server::handle_accept, this, new_session, boost::asio::placeholders::error));
 		} else { delete new_session; }
 	}
-
-private:
-	boost::asio::io_service& io_service_;
-	tcp::acceptor acceptor_;
 };
 
-} // end namespace dist
+} // end namespace network
 
 #endif // NETWORK_H
