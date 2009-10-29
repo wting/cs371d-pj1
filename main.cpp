@@ -25,7 +25,7 @@ using namespace aux;
 volatile bool child_exit = false;
 
 void sig_child(int sig) {
-	cout << "caught signal " << sig << endl;
+	cout << "main()::caught signal " << sig << endl;
 	cout << "\tpid = " << getpid() << endl;
 	child_exit = true;
 }
@@ -33,6 +33,7 @@ void sig_child(int sig) {
 ///\TODO: log cleanup
 int main(int argc, char* argv[]) {
 	//(void) signal(SIGINT,sig_child); //finish signal catching
+	///\FIXME: possible memory leaks whene exiting with ctrl+d
 
 	if (argc != 2) {
 		cerr << "Usage: " << argv[0] << " <port>" << endl;
@@ -44,11 +45,11 @@ int main(int argc, char* argv[]) {
 	pid_t c_id = fork();
 	if (c_id > 0) { //parent process
 		logger log(0,parent_ID);
-		log.write(5,"parent process begin");
-		log.write(0,to_str("forked child (c_id = ") + to_str(c_id) + to_str(")"));
+		log.write(5,"main()::parent process begin");
+		log.write(0,to_str("main()::forked child pid: ") + to_str(c_id));
 
 		{
-			log.write(0,to_str("client creation to port ") + to_str(argv[1]));
+			log.write(0,to_str("main()::client creation to port ") + to_str(argv[1]));
 			network::client cl("localhost",argv[1],&log);
 			string line;
 			//log.write(2,"beginning input block");
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
 				int c_status = 0;
 				waitpid(-1,&c_status,WNOHANG);
 				if (c_status != 0) {
-					log.write(100,"problem with child process detected");
+					log.write(100,"main()::problem with child process detected");
 					break;
 				}
 
@@ -66,42 +67,42 @@ int main(int argc, char* argv[]) {
 
 				if (cin.eof() || line.compare("exit") == 0)
 					break;
-				log.write(4,to_str("sending input to localhost:" + to_str(argv[1]) + ": ") + line);
+				log.write(4,to_str("main()::sending input to localhost:" + to_str(argv[1]) + ": ") + line);
 				cl.send(line);
 			}
 		}
 
-		log.write(4,"request child process to terminate");
+		log.write(4,"main()::request child process to terminate");
 		//send command to network socket
 		kill(c_id,SIGINT);
 		//wait 3 sec, check for existence of child?  send kill command
 		waitpid(c_id,0,0);
 
-		log.write(5,"parent process end");
+		log.write(5,"main()::parent process end");
 	} else if (c_id == 0) { //child process
 		logger log(0,getpid());
-		log.write(5,"child process begin");
+		log.write(5,"main()::child process begin");
 		boost::asio::io_service io;
 		//dist::node n();
 
 		try {
-			log.write(3,to_str("server creation on port ") + to_str(argv[1]));
+			log.write(3,to_str("main()::server creation on port ") + to_str(argv[1]));
 			network::server s(io,argv[1],&log);
 
-			log.write(3,"server running");
+			log.write(3,"main()::server running");
 			io.run();
 
-			log.write(3,"server exiting");
+			log.write(3,"main()::server exiting");
 		} catch (...) {
-			log.write(100,"server creation failed");
-			log.write(5,"child process end");
+			log.write(100,"main()::server creation failed");
+			log.write(5,"main()::child process end");
 			exit(1);
 			throw;
 		}
 
-		log.write(5,"child process end");
+		log.write(5,"main()::child process end");
 	} else {
-		cerr << "Failed to fork" << endl;
+		cerr << "main()::failed to fork" << endl;
 		exit(1);
 	}
 
