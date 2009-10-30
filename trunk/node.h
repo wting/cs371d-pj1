@@ -34,10 +34,11 @@ public:
 		log->write(2,"dist::~node()");
 	}
 
-	void parse(string input) {
+	char* parse(char* input) {
 		//if (validate_input(input))
 
-		//log.write(5,"input: " + input);
+		log->write(5,to_str("dist::node::parse(") + to_str(input) + to_str(")"));
+		return input;
 	}
 
 	///\TODO:finish

@@ -116,6 +116,7 @@ public:
 		return tmp.c_str();
 	}*/
 	void timestamp() {
+		strcpy(data_,"test");
 		strcat(data_,"_timestamp_modification");
 	}
 
@@ -123,8 +124,6 @@ public:
 		log->write(1,"network::session::handle_read()");
 		if (!error) {
 			//write data to client
-			//data_ = timestamp(&data_);
-			timestamp();
 
 			boost::asio::async_write(socket_,
 					boost::asio::buffer(data_, bytes_transferred),
